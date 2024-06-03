@@ -3,10 +3,10 @@ package components
 import (
 	"fmt"
 
-	"main/app/leaderboard/models"
+	"main/dbgen" // Add the missing import for "dbgen"
 )
 
-templ LeaderboardTable(items []models.LeaderboardItemStore) {
+templ LeaderboardTable(items []dbgen.GetLeaderboardValuesRow) {
 	// Render the table
 	<table id="leaderboard-table">
 		<tr>
@@ -15,7 +15,7 @@ templ LeaderboardTable(items []models.LeaderboardItemStore) {
 		</tr>
 		for _, item := range items {
 			<tr>
-				<td class="p-2 border">{ item.Name }</td>
+				<td class="p-2 border">{ item.Name.String }</td>
 				<td class="p-2 border">{ fmt.Sprint(item.Score) }</td>
 			</tr>
 		}
