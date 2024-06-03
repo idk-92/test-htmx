@@ -25,3 +25,7 @@ tmp
 
 # Go workspace file
 go.work
+
+# postgres
+volumes
+.env

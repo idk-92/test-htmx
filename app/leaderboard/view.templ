@@ -15,8 +15,8 @@ templ Leaderboard(title string, items []dbgen.GetLeaderboardValuesRow) {
 
 templ pageLeaderboard(title string, items []dbgen.GetLeaderboardValuesRow) {
 	<div class="p-2">
-		<p class="font-bold">Leaderboard Example</p>
-		<p class="mb-2">Submit leaderboard entries to the SQLite database using HTMX calls.</p>
+		<p class=" uk-text-default font-bold">Leaderboard Example</p>
+		<p class=" uk-text-large mb-2">Submit leaderboard entries to the SQLite database using HTMX calls.</p>
 		@components.LeaderboardForm()
 		<br/>
 		<br/>

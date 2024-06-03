@@ -9,6 +9,12 @@
   "author": "Matthew Rideout",
   "license": "UNLICENSED",
   "devDependencies": {
+    "@types/node": "^20.14.0",
     "tailwindcss": "^3.4.1"
+  },
+  "dependencies": {
+    "franken-ui": "^0.0.12",
+    "postcss-combine-duplicated-selectors": "^10.0.3",
+    "postcss-sort-media-queries": "^5.2.0"
   }
 }

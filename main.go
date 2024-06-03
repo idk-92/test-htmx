@@ -16,38 +16,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-// var ddl string
-
-// func main() {
-// 	ctx := context.Background()
-
-// 	// Connect to the database
-// 	db, err := db.Connect(ctx)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	// db.DB.AutoMigrate(&leaderboardModels.LeaderboardItemStore{})
-
-// 	e := echo.New()
-
-// 	// Other Middleware
-// 	e.Use(middleware.Logger())
-// 	e.Use(middleware.Recover())
-
-// 	// Configure the static file directory
-// 	e.Static("/dist", "dist")
-
-// 	// Set up the renderer
-// 	template.NewTemplateRenderer(e)
-
-// 	// Init routes
-// 	index.InitRoutes(e)
-// 	leaderboard.InitRoutes(e)
-
-// 	e.Logger.Fatal(e.Start(":1323"))
-// }
-
 type DBAppService struct {
 	pool *pgxpool.Pool
 }

@@ -1,0 +1,43 @@
+version: "2"
+# cloud:
+#   project: '01HZA9G6NRQV79GV6W4F25VG9D'
+sql:
+  # - engine: postgresql
+  #   queries: "db/queries"
+  #   schema: "db/migrations"
+  #   gen:
+  #     go:
+  #       package: "dbgen"
+  #       out: "dbgen"
+  #       sql_package: "pgx/v5"
+  #   rules:
+  #     - sqlc/db-prepare
+  #   database:
+  #     managed: true
+  - engine: "postgresql"
+    queries: "db/queries"
+    schema: "db/migrations"
+    gen:
+      go:
+        package: "dbgen"
+        sql_package: "pgx/v5"
+        out: "dbgen"
+    database:
+      uri: "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable"
+    rules:
+      - sqlc/db-prepare
+# overrides:
+#   go:
+#     overrides:
+#       - go_type:
+#           import: github.com/hardfinhq/go-date
+#           package: date
+#           type: NullDate
+#         db_type: date
+#         nullable: true
+#       - go_type:
+#           import: github.com/hardfinhq/go-date
+#           package: date
+#           type: Date
+#         db_type: date
+#         nullable: false

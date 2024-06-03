@@ -1,0 +1,34 @@
+version: '3'
+
+tasks:
+  build:
+    cmds:
+      - go build -v -i main.go
+
+  assets:
+    cmds:
+      - esbuild --bundle --minify css/index.css > public/bundle.css
+
+  reset-db:
+    cmds:
+      - rm -rf volumes/db/data && docker-compose down && docker-compose up -d
+
+  up:
+    cmds:
+      - docker-compose up -d && air
+
+  down:
+    cmds:
+      - docker-compose down
+
+  db-up:
+    cmds:
+      - GOOSE_DRIVER=postgres GOOSE_DBSTRING=$LOCAL_POSTGRES_URL GOOSE_MIGRATION_DIR=/Users/idk/Projects/personal/test-htmx/db/migrations goose up
+
+  db-down:
+    cmds:
+      - GOOSE_DRIVER=postgres GOOSE_DBSTRING=$LOCAL_POSTGRES_URL GOOSE_MIGRATION_DIR=/Users/idk/Projects/personal/test-htmx/db/migrations goose down
+
+  sqlc-verify:
+    cmds:
+      - sqlc compile && sqlc vet

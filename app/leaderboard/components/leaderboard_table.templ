@@ -16,7 +16,7 @@ templ LeaderboardTable(items []dbgen.GetLeaderboardValuesRow) {
 		for _, item := range items {
 			<tr>
 				<td class="p-2 border">{ item.Name.String }</td>
-				<td class="p-2 border">{ fmt.Sprint(item.Score) }</td>
+				<td class="p-2 border">{ fmt.Sprint(item.Score.Int32) }</td>
 			</tr>
 		}
 	</table>

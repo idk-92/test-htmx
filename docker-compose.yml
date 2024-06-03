@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    user: postgres
+
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_SSLMODE=disable # Enable SSL mode for prod
+    command: postgres -c log_statement=all
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./volumes/db/data:/var/lib/postgresql/data:Z
+      # - ./db/init.sql:/docker-entrypoint-initdb.d/init-scripts/create_tables.sql:Z
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+volumes:
+  pg_data:

@@ -1,7 +1,6 @@
 package leaderboard
 
 import (
-	"fmt"
 	"log"
 	"main/app/leaderboard/components"
 	"main/db"
@@ -20,11 +19,9 @@ func LeaderboardService(c echo.Context) error {
 
 	// Get params
 	title := c.QueryParam("title")
-	fmt.Println("🚀🚀 ~ funcLeaderboardService ~ title:", title)
 
 	// Get the updated list of items from the database
 	items, err := getLeaderboardTableData(c.Request().Context())
-	fmt.Println("🚀🚀 ~ funcLeaderboardService ~ items:", items)
 
 	if err != nil {
 		log.Println("getLeaderboardTableData err: ", err)
