@@ -1,10 +1,21 @@
 package leaderboard
 
 import (
-	"github.com/labstack/echo/v4"
+	"net/http"
+
+	"github.com/a-h/templ"
+	"github.com/go-chi/chi/v5"
 )
 
-func InitRoutes(e *echo.Echo) {
-	e.GET("/leaderboard", LeaderboardService)
-	e.POST("/leaderboard/add", LeaderboardAddService)
+func InitRoutes(e *chi.Mux) {
+
+	// e.Get("/leaderboard", templ.Handler(LeaderboardPage("asd")).ServeHTTP)
+	e.Get("/leaderboard", templ.Handler(LeaderboardService(e)).ServeHTTP)
+	e.Post("/leaderboard/add", func(w http.ResponseWriter, r *http.Request) {
+
+		templ.Handler(addLeaderboardItem(w, r)).ServeHTTP(w, r)
+	})
+	e.Post("/leaderboard/add", func(w http.ResponseWriter, r *http.Request) {
+		templ.Handler(addLeaderboardItem(w, r)).ServeHTTP(w, r)
+	})
 }

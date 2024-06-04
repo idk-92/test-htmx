@@ -1,11 +1,13 @@
 package index
 
 import (
-	"github.com/labstack/echo/v4"
+	"github.com/a-h/templ"
+	"github.com/go-chi/chi/v5"
 )
 
-func InitRoutes(e *echo.Echo) {
-	e.GET("/", IndexRoute)
-	e.GET("/index/your-name-is", IndexRouteYourNameIs)
-	e.POST("/index/new-global-name", IndexRouteYourNameIsGlobal)
+func InitRoutes(e *chi.Mux) {
+
+	e.Get("/", templ.Handler(IndexPage("asd")).ServeHTTP)
+	// e.GET("/index/your-name-is", IndexRouteYourNameIs)
+	// e.POST("/index/new-global-name", IndexRouteYourNameIsGlobal)
 }

@@ -1,85 +1,89 @@
 package leaderboard
 
 import (
+	"context"
 	"log"
 	"main/app/leaderboard/components"
 	"main/db"
 	"main/dbgen"
-	"main/template"
 	"net/http"
 	"strconv"
 
+	"github.com/a-h/templ"
+	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/labstack/echo/v4"
 )
 
-func LeaderboardService(c echo.Context) error {
+func LeaderboardService(e *chi.Mux) templ.Component {
 
-	template.NewTemplateRenderer(c.Echo())
+	// template.NewTemplateRenderer(c.Echo())
 
 	// Get params
-	title := c.QueryParam("title")
+	// dateParam := chi.URLParam(r, "date")
+
+	// title := chi.URLParam(r, "date")
 
 	// Get the updated list of items from the database
-	items, err := getLeaderboardTableData(c.Request().Context())
+	items, err := getLeaderboardTableData(context.Background())
 
 	if err != nil {
 		log.Println("getLeaderboardTableData err: ", err)
-		return err
+		return LeaderboardPage("test title", items)
 	}
-
-	// Get the component
-	component := Leaderboard(title, items)
 
 	// Render the component
-	return template.AssertRender(c, http.StatusOK, component)
+	return LeaderboardPage("test title", items)
 }
 
-func LeaderboardAddService(c echo.Context) error {
-	template.NewTemplateRenderer(c.Echo())
+func addLeaderboardItem(w http.ResponseWriter, r *http.Request) templ.Component {
+	// template.NewTemplateRenderer(c.Echo())
 
 	// Construct the model and bind the form data to it
-	leaderboardItem := &dbgen.CreateLeaderboardValueParams{}
-	if err := c.Bind(leaderboardItem); err != nil {
-		return err
-	}
+	// leaderboardItem := &dbgen.CreateLeaderboardValueParams{}
+	// if err := c.Bind(leaderboardItem); err != nil {
+	// 	return nil
+	// }
 
-	pool, err := db.Connect(c.Request().Context())
+	pool, err := db.Connect(r.Context())
 	if err != nil {
 		log.Println("LeaderboardAddService: pool connect err", err)
-		return err
+		return nil
 	}
 	defer pool.Close()
 
 	queries := dbgen.New(pool)
 	// Save to database using GORM
-	scoreString := c.Request().FormValue("score")
+
+	r.ParseForm()
+	scoreString := r.Form.Get("score")
+
 	score, err := strconv.ParseInt(scoreString, 10, 32)
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil
 	}
+
 	scoreValue := pgtype.Int4{Int32: int32(score), Valid: true}
-	queries.CreateLeaderboardValue(c.Request().Context(), dbgen.CreateLeaderboardValueParams{
-		Name:  pgtype.Text{String: c.Request().FormValue("name"), Valid: c.Request().FormValue("name") != ""},
+	err = queries.CreateLeaderboardValue(r.Context(), dbgen.CreateLeaderboardValueParams{
+		Name:  pgtype.Text{String: r.Form.Get("name"), Valid: r.Form.Get("name") != ""},
 		Score: scoreValue,
 	})
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil
 	}
 
 	// Get the updated list of items from the database
-	items, err := getLeaderboardTableData(c.Request().Context())
+	items, err := getLeaderboardTableData(r.Context())
 
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil
 	}
 
 	// Create the component with the leaderboard data
 	component := components.LeaderboardTable(items)
 
 	// Render the component
-	return template.AssertRender(c, http.StatusOK, component)
+	return component
 }
