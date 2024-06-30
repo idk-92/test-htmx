@@ -6,6 +6,9 @@ tasks:
       - go build -v -i main.go
 
   assets:
+  # npx esbuild js/index.ts --bundle --outdir=assets/ --watch
+
+
     cmds:
       - esbuild --bundle --minify css/index.css > public/bundle.css
 
@@ -13,10 +16,20 @@ tasks:
     cmds:
       - rm -rf volumes/db/data && docker-compose down && docker-compose up -d
 
-  up:
+  live-tw:
     cmds:
-      - docker-compose up -d && air
+      - npx tailwindcss -o ./dist/tailwind.css --minify --watch
+  live-templ:
+    cmds:
+      - templ generate --watch --proxy="http://localhost:1323" --open-browser=false -v
 
+  up:
+  # assets,
+    deps: [live-tw, live-templ,be]
+
+  be:
+    cmds:
+      - docker-compose up && air
   down:
     cmds:
       - docker-compose down
@@ -32,3 +45,6 @@ tasks:
   sqlc-verify:
     cmds:
       - sqlc compile && sqlc vet
+# npx tailwindcss -i ./input.css -o ./assets/styles.css --minify --watch
+
+#   cmd = "templ generate --proxy http://localhost:1323 && npx tailwindcss -o ./dist/tailwind.css && go build -o ./tmp/main ."

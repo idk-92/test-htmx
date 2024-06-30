@@ -1,0 +1,3 @@
+<div class=\"p-2\"><p class=\" uk-text-default font-bold\">Leaderboard Example</p><p class=\" uk-text-large mb-2\">Submit leaderboard entries to the SQLite database using HTMX calls.</p>
+<br><br>
+</div>

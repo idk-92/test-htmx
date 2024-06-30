@@ -8,9 +8,13 @@ import (
 	"log"
 	"main/app/index"
 	"main/app/leaderboard"
+	"mime/quotedprintable"
 	"net/http"
+	"net/mail"
 	"os"
 	"os/signal"
+	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 
@@ -18,6 +22,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/cors"
+	"golang.org/x/net/html"
 )
 
 type DBAppService struct {
@@ -96,6 +101,25 @@ func service() http.Handler {
 	})
 
 	r.Use(c.Handler)
+
+	msg, err := parseEmlFile("test.eml")
+	if err != nil {
+		log.Fatalf("Error parsing email: %v", err)
+	}
+
+	parseEmailHeader(msg.Header)
+
+	doc, err := parseEmailBody(msg.Body)
+	if err != nil {
+		log.Fatalf("Error parsing email body: %v", err)
+	}
+
+	// // Traverse the HTML tree and find <img> elements
+
+	imageUrls := extractImgSrcs(doc)
+	//TODO: store image urls in the database
+	fmt.Println(imageUrls)
+
 	index.InitRoutes(r)
 	leaderboard.InitRoutes(r)
 	// r.Get("/", templ.Handler(index.IndexPage("asd")).ServeHTTP)
@@ -119,4 +143,99 @@ func service() http.Handler {
 	r.Handle("/dist/*", http.StripPrefix("/dist/", fs))
 
 	return r
+}
+func extractImgSrcs(n *html.Node) []string {
+	imgSrcs := []string{}
+
+	if n.Type == html.ElementNode && n.Data == "img" {
+		for _, attr := range n.Attr {
+
+			if attr.Key == "src" {
+
+				imgSrc := html.UnescapeString(attr.Val)
+				imgSrcs = append(imgSrcs, imgSrc)
+			}
+		}
+	}
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		imgSrcs = append(imgSrcs, extractImgSrcs(c)...)
+	}
+	return imgSrcs
+}
+
+type Header struct {
+	Date      string
+	From      string
+	Subject   string
+	To        string
+	MessageId string
+}
+
+func parseEmailHeader(hdr mail.Header) (Header, error) {
+
+	header := Header{}
+	for k := range hdr {
+		if k == "Date" {
+			date := hdr.Get("Date")
+			const inputLayout = "Mon, 02 Jan 2006 15:04:05 -0700"
+			const outputLayout = time.RFC3339
+			parsedTime, err := time.Parse(inputLayout, date)
+			if err != nil {
+				log.Fatalf("Error parsing date: %v", err)
+				return header, err
+			}
+
+			dbFriendlyDate := parsedTime.Format(outputLayout)
+			header.Date = dbFriendlyDate
+
+		}
+
+		header.MessageId = hdr.Get("Message-Id")
+		header.Subject = hdr.Get("Subject")
+		header.From = hdr.Get("From")
+		header.To = hdr.Get("To")
+
+	}
+	return header, nil
+}
+func parseEmailBody(rd io.Reader) (*html.Node, error) {
+	bodyReader := quotedprintable.NewReader(rd)
+	body, err := io.ReadAll(bodyReader)
+	if err != nil {
+		return nil, fmt.Errorf("parseEmailBody, error reading body: %v", err)
+	}
+
+	decodedBody := html.UnescapeString(string(body))
+
+	// // Parse the HTML to find <img> elements
+	doc, err := html.Parse(strings.NewReader(decodedBody))
+	if err != nil {
+		return nil, fmt.Errorf("parseEmailBody, error parsing html body: %v", err)
+	}
+
+	return doc, nil
+}
+
+func parseEmlFile(emlFileName string) (*mail.Message, error) {
+
+	emlFilePath := filepath.Join("testdata", emlFileName)
+
+	file, err := os.Open(emlFilePath)
+	if err != nil {
+		return nil, fmt.Errorf("test, error opening file: %v", err)
+	}
+	defer file.Close()
+
+	// Read the file content
+	data, err := io.ReadAll(file)
+	if err != nil {
+		return nil, fmt.Errorf("test, error reading file: %v", err)
+	}
+
+	// Parse the email
+	msg, err := mail.ReadMessage(strings.NewReader(string(data)))
+	if err != nil {
+		return nil, fmt.Errorf("test, error parsing email: %v", err)
+	}
+	return msg, nil
 }

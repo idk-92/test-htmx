@@ -5,7 +5,7 @@ tmp_dir = "tmp"
 [build]
   args_bin = []
   bin = "./tmp/main"
-  cmd = "templ generate --proxy http://localhost:1323 && npx tailwindcss -o ./dist/tailwind.css && go build -o ./tmp/main ."
+  cmd = "go build -o ./tmp/main ."
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata", "node_modules","volumes"]
   exclude_file = []

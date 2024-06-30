@@ -1,0 +1,5 @@
+<table id=\"leaderboard-table\"><tr><th>NAME</th><th>SCORE</th></tr>
+<tr><td class=\"p-2 border\">
+</td><td class=\"p-2 border\">
+</td></tr>
+</table>

@@ -1,0 +1,6 @@
+<!doctype html>
+<head><title>
+</title><link rel=\"stylesheet\" href=\"/dist/main.css\"><link rel=\"stylesheet\" href=\"/dist/tailwind.css\"><link rel=\"stylesheet\" href=\"https://unpkg.com/franken-ui-releases@0.0.12/dist/neutral.min.css\"><script src=\"https://cdn.jsdelivr.net/npm/uikit@3.20.8/dist/js/uikit.min.js\"></script><script src=\"https://cdn.jsdelivr.net/npm/uikit@3.20.8/dist/js/uikit-icons.min.js\"></script><script src=\"node_modules/htmx.org/dist/htmx.min.js\"></script><script src=\"/dist/hyperscript.min.js\"></script></head>
+<body class=\"bg-white w-full flex flex-col relative font-serif max-w-3xl m-auto\">
+</body>
+<header class=\"flex gap-x-5 justify-between items-center p-2 border-b\"><a href=\"/\" class=\"text-xl font-bold\">HTMX Example</a><nav class=\"flex gap-x-5\"><a class=\"border px-2 py-1 hover:bg-gray-100\" href=\"/?name=John\">Home</a> <a class=\"border px-2 py-1 hover:bg-gray-100\" href=\"/leaderboard\">Leaderboard</a></nav></header>
